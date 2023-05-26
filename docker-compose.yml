@@ -1,0 +1,26 @@
+version: "3"
+services:
+  app:
+    build: .
+    ports:
+      - 8080:8080
+    depends_on:
+      - db
+      - pgadmin
+
+  db:
+    image: postgres
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: 1234
+      POSTGRES_DB: cifra-journal
+    volumes:
+      - ./data:/var/lib/postgresql/data
+
+  pgadmin:
+    image: dpage/pgadmin4
+    environment:
+      PGADMIN_DEFAULT_EMAIL: slameryt4@gmail.com
+      PGADMIN_DEFAULT_PASSWORD: 1234
+    ports:
+      - 5050:80
