@@ -13,14 +13,14 @@ services:
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: 1234
-      POSTGRES_DB: cifra-journal
+      POSTGRES_DB: practice-auth
     volumes:
       - ./data:/var/lib/postgresql/data
 
   pgadmin:
     image: dpage/pgadmin4
     environment:
-      PGADMIN_DEFAULT_EMAIL: slameryt4@gmail.com
+      PGADMIN_DEFAULT_EMAIL: test@gmail.com
       PGADMIN_DEFAULT_PASSWORD: 1234
     ports:
       - 5050:80

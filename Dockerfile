@@ -1,7 +1,7 @@
 FROM gradle:jdk17
 
-WORKDIR /journal-action-backend
+WORKDIR /PracticeAuthBackend
 
-COPY . /journal-action-backend
+COPY . /PracticeAuthBackend
 
 CMD ["gradle", "bootRun"]
