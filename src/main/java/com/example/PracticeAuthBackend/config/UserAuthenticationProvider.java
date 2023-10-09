@@ -19,6 +19,7 @@ import com.example.PracticeAuthBackend.dto.entities.UserDto;
 import com.example.PracticeAuthBackend.services.AuthenticationService;
 import com.google.gson.Gson;
 import jakarta.annotation.PostConstruct;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -81,6 +82,37 @@ public class UserAuthenticationProvider {
         authenticationService.saveRefreshToken(refreshTokenDto);
 
         return new TokensDto(accessToken, refreshToken);
+    }
+
+    public TokensDto createNewTokensByRefreshToken(HttpServletRequest request) throws ExecutionException, InterruptedException {
+
+        String jwtToken;
+        String authorizationHeader = request.getHeader("Authorization");
+        if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
+            jwtToken = authorizationHeader.substring(7);
+        } else throw new RuntimeException("Incorrect refresh token");
+
+        Algorithm algorithm = Algorithm.HMAC256(secretKey);
+
+        JWTVerifier verifier = JWT.require(algorithm)
+                .build();
+
+        DecodedJWT decoded = verifier.verify(jwtToken);
+
+        byte[] decodedBytes = Base64.getDecoder().decode(decoded.getPayload());
+        String decodedString = new String(decodedBytes, StandardCharsets.UTF_8);
+
+        TokenPayloadDto tokenPayloadDto = gson.fromJson(decodedString, TokenPayloadDto.class);
+
+        RefreshTokenDto refreshTokenDto = authenticationService.findRefreshTokenByToken(jwtToken).get();
+
+        if (tokenPayloadDto.getTypeToken().equals("refresh")) {
+            if (refreshTokenDto == null) throw new RuntimeException("Incorrect refresh token");
+
+            return createToken(refreshTokenDto.getUser().getLogin());
+        } else  {
+            throw new RuntimeException("Incorrect refresh token");
+        }
     }
 
     public Authentication validateToken(String token) throws ExecutionException, InterruptedException {

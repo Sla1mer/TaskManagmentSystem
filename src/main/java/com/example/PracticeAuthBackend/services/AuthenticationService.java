@@ -1,17 +1,28 @@
 package com.example.PracticeAuthBackend.services;
 
+import com.auth0.jwt.JWT;
+import com.auth0.jwt.JWTVerifier;
+import com.auth0.jwt.algorithms.Algorithm;
+import com.auth0.jwt.interfaces.DecodedJWT;
 import com.example.PracticeAuthBackend.dto.auth.CredentialsDto;
+import com.example.PracticeAuthBackend.dto.auth.TokenPayloadDto;
+import com.example.PracticeAuthBackend.dto.auth.TokensDto;
 import com.example.PracticeAuthBackend.dto.entities.RefreshTokenDto;
 import com.example.PracticeAuthBackend.dto.entities.UserDto;
 import com.example.PracticeAuthBackend.repo.RefreshTokenDtoRepo;
 import com.example.PracticeAuthBackend.repo.UserDtoRepo;
 import com.example.PracticeAuthBackend.utils.PasswordUtils;
-import org.apache.catalina.User;
+import com.google.gson.Gson;
+import jakarta.servlet.http.HttpServletRequest;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
+import java.nio.charset.StandardCharsets;
 import java.security.NoSuchAlgorithmException;
+import java.util.Base64;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 
 @Service
 public class AuthenticationService {
@@ -19,9 +30,15 @@ public class AuthenticationService {
     private final UserDtoRepo userDtoRepo;
     private final RefreshTokenDtoRepo refreshTokenDtoRepo;
 
-    public AuthenticationService(UserDtoRepo userDtoRepo, RefreshTokenDtoRepo refreshTokenDtoRepo) {
+    @Value("${security.jwt.token.secret-key:secret-key}")
+    private String secretKey;
+
+    private final Gson gson;
+
+    public AuthenticationService(UserDtoRepo userDtoRepo, RefreshTokenDtoRepo refreshTokenDtoRepo, Gson gson) {
         this.userDtoRepo = userDtoRepo;
         this.refreshTokenDtoRepo = refreshTokenDtoRepo;
+        this.gson = gson;
     }
 
     @Async
