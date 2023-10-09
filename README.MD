@@ -9,4 +9,6 @@
 
 После у вас должно запуститься 3 контейнера (база данных, интерфейс для бд, приложение)
 
-Что бы перейти в swagger: http://localhost:8080/swagger-ui/index.html#
+Что бы перейти в swagger: <b>http://localhost:8080/swagger-ui/index.html#/</b>
+
+
