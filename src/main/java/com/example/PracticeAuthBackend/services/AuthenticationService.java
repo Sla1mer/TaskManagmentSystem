@@ -6,6 +6,7 @@ import com.example.PracticeAuthBackend.dto.entities.UserDto;
 import com.example.PracticeAuthBackend.repo.RefreshTokenDtoRepo;
 import com.example.PracticeAuthBackend.repo.UserDtoRepo;
 import com.example.PracticeAuthBackend.utils.PasswordUtils;
+import org.apache.catalina.User;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
@@ -29,11 +30,22 @@ public class AuthenticationService {
 
         UserDto userDto = userDtoRepo.findByLoginAndPassword(credentialsDto.getLogin(), encodePassword);
 
-        System.out.println(encodePassword);
-
         if (userDto == null) throw new RuntimeException("Invalid password or login");
 
         return CompletableFuture.completedFuture(userDto);
+    }
+
+    @Async
+    public CompletableFuture<UserDto> registrationUser(UserDto credentialsDto) throws NoSuchAlgorithmException {
+        String encodePassword = PasswordUtils.toHexString(PasswordUtils.getSHA(credentialsDto.getPassword()));
+
+        UserDto user = new UserDto(credentialsDto.getLogin(), encodePassword);
+
+        userDtoRepo.save(user);
+
+        UserDto newUser = userDtoRepo.findByLoginAndPassword(credentialsDto.getLogin(), encodePassword);
+
+        return CompletableFuture.completedFuture(newUser);
     }
 
     @Async

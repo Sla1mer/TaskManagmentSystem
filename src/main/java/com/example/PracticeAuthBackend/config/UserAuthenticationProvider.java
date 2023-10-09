@@ -53,7 +53,7 @@ public class UserAuthenticationProvider {
         Algorithm algorithm = Algorithm.HMAC256(secretKey);
 
         String accessToken = JWT.create()
-                .withIssuer("Cifra")
+                .withIssuer("Practice")
                 .withSubject(login)
                 .withIssuedAt(now)
                 .withExpiresAt(validityAccess)
@@ -61,7 +61,7 @@ public class UserAuthenticationProvider {
                 .sign(algorithm);
 
         String refreshToken = JWT.create()
-                .withIssuer("Cifra")
+                .withIssuer("Practice")
                 .withSubject(login)
                 .withIssuedAt(now)
                 .withPayload(gson.toJson(new TokenPayloadDto("refresh")))

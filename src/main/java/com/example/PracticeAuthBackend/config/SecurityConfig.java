@@ -27,7 +27,8 @@ public class SecurityConfig {
                 .exceptionHandling(ex -> ex.authenticationEntryPoint(userAuthenticationEntryPoint))
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(request -> request
-                        .requestMatchers("/api/signIn", "/api/refreshTokens").permitAll()
+                        .requestMatchers("/api/signIn", "/api/refreshTokens", "/api/regUser",
+                                "/swagger-ui.html", "/swagger-ui/**", "swagger-ui/index.html#/").permitAll()
                         .anyRequest().authenticated()
                 )
                 .sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
