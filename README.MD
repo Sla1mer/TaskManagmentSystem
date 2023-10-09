@@ -14,8 +14,10 @@
 Что бы перейти в pgAdmin(панель управления БД), перейдите по этой ссылке: <b>http://localhost:5050/browser/</b>
 
 Данные для входа в аккаунт админа:<br>
-Login: <b>test@gmail.com</b><br>
-Password: <b>1234</b>
+<ul>
+  <li>Login: <b>test@gmail.com</b><br></li>
+  <li>Password: <b>1234</b></li>
+</ul>
 
 Данные для регистрации сервера
 <ul>
