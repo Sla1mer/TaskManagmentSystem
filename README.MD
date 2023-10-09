@@ -11,4 +11,16 @@
 
 Что бы перейти в swagger: <b>http://localhost:8080/swagger-ui/index.html#/</b>
 
+Что бы перейти в pgAdmin(панель управления БД), перейдите по этой ссылке: <b>http://localhost:5050/browser/</b>
 
+Данные для входа в аккаунт админа:
+Login: <b>test@gmail.com</b>
+Password: <b>1234</b>
+
+Данные для регистрации сервера
+<ul>
+  <li>Host name/address: <b>db</b></li>
+  <li>Port: <b>5432</b></li>
+  <li>Username: <b>postgres</b></li>
+  <li>Password <b>1234</b></li>
+</ul>
