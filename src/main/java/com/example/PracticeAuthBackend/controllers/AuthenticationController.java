@@ -33,7 +33,7 @@ public class AuthenticationController {
         this.authenticationService = authenticationService1;
     }
 
-    @Operation(summary = "Авторизация пользователя", description = "Нужно в body передать json с полями: login, password")
+    @Operation(summary = "Авторизация пользователя", description = "Нужно в body передать json с полями: login, password,")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Successful operation"),
             @ApiResponse(responseCode = "401", description = "Unauthorized - (Не правильный логин или пароль)", content = {
@@ -67,6 +67,25 @@ public class AuthenticationController {
     @PostMapping("/refreshTokens")
     public ResponseEntity<TokensDto> refreshTokens(HttpServletRequest request) throws ExecutionException, InterruptedException {
         return ResponseEntity.ok(userAuthenticationProvider.createNewTokensByRefreshToken(request));
+    }
+
+    @Operation(summary = "Проверка на валидность access токена", description = "Нужно в Header (Authorization) передать access token в таком формате: Bearer your_token_here")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Successful operation"),
+            @ApiResponse(responseCode = "401", description = "Unauthorized - (Не правильный токен или истекло время жизни ключа)", content = {
+                    @Content(schema = @Schema(implementation = Void.class))
+            })
+    })
+    @PostMapping("/validateAccessToken")
+    public ResponseEntity<String> validateAccessToken(HttpServletRequest request) throws ExecutionException, InterruptedException {
+        String jwtToken;
+        String authorizationHeader = request.getHeader("Authorization");
+        if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
+            jwtToken = authorizationHeader.substring(7);
+        } else throw new RuntimeException("Incorrect access token");
+
+        userAuthenticationProvider.validateToken(jwtToken);
+        return ResponseEntity.ok("Access токен корректный");
     }
 
 }
