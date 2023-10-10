@@ -56,9 +56,9 @@ public class AuthenticationService {
     public CompletableFuture<UserDto> registrationUser(UserDto credentialsDto) throws NoSuchAlgorithmException {
         String encodePassword = PasswordUtils.toHexString(PasswordUtils.getSHA(credentialsDto.getPassword()));
 
-        UserDto user = new UserDto(credentialsDto.getLogin(), encodePassword);
+        credentialsDto.setPassword(encodePassword);
 
-        userDtoRepo.save(user);
+        userDtoRepo.save(credentialsDto);
 
         UserDto newUser = userDtoRepo.findByLoginAndPassword(credentialsDto.getLogin(), encodePassword);
 
