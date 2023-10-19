@@ -1,7 +1,7 @@
 FROM gradle:jdk17
 
-WORKDIR /PracticeAuthBackend
+WORKDIR /CRMAuthService
 
-COPY . /PracticeAuthBackend
+COPY . /CRMAuthService
 
 CMD ["gradle", "bootRun"]

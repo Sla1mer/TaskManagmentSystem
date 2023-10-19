@@ -1,4 +1,4 @@
-<h1>Тестовое задание CRM+Уголок (выполнял: Садик Назар)</h1>
+<h1>Сервис авторизации CRM</h1>
 
 <h2>Инструкция</h2>
 <ol>
@@ -13,22 +13,4 @@
 
 Что бы перейти в pgAdmin(панель управления БД), перейдите по этой ссылке: <b>http://localhost:5050/browser/</b>
 
-Данные для входа в аккаунт админа:<br>
-<ul>
-  <li>Login: <b>test@gmail.com</b><br></li>
-  <li>Password: <b>1234</b></li>
-</ul>
-
-Данные для регистрации сервера в pgAdmin:
-<ul>
-  <li>Host name/address: <b>db</b></li>
-  <li>Port: <b>5432</b></li>
-  <li>Username: <b>postgres</b></li>
-  <li>Password <b>1234</b></li>
-</ul>
-
-Для теста API уже имеется тестовый пользователь (можно зарегистрировать нового, как это сделать найдете в swagger):
-<ul>
-  <li>Login: <b>sla1merapk@gmail.com</b><br></li>
-  <li>Password: <b>test</b></li>
-</ul>
+Все данные для входов находяться в <strong>.env</strong>
