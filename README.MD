@@ -72,5 +72,7 @@ docker-compose up --build
 
 1. Откройте Postman
 2. Нажмите кнопку Import
-   <img src="/Users/sadiknazar/Desktop/Снимок экрана 2023-12-07 в 13.31.07.png">
+   ![import](import.png)
+
 3. Загрузите сюда файл **"TaskSystem API.postman_collection.json"**, который находитсья в корневой папке с проектом
+![import](upload.png)
