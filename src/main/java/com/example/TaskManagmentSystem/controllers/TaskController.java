@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.nio.file.AccessDeniedException;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
 
 @RestController
 @Tag(name = "TaskController", description = "Задачи")
@@ -29,8 +30,8 @@ public class TaskController {
 
     // Создание новой задачи
     @PostMapping
-    public ResponseEntity<Task> createTask(@RequestBody Task task) {
-        Task createdTask = taskService.createTask(task);
+    public ResponseEntity<Task> createTask(@RequestBody Task task) throws ExecutionException, InterruptedException {
+        Task createdTask = taskService.createTask(task).get();
         return new ResponseEntity<>(createdTask, HttpStatus.CREATED);
     }
 
@@ -41,29 +42,29 @@ public class TaskController {
                                                   @RequestParam(name = "authorId", required = false) Long authorId,
                                                   @RequestParam(name = "assigned", required = false) Long assigned,
                                                   @RequestParam(name = "page", defaultValue = "0") int page,
-                                                  @RequestParam(name = "size", defaultValue = "10") int size) {
-        List<Task> tasks = taskService.getAllTasks(status, priority, authorId, assigned, page, size);
+                                                  @RequestParam(name = "size", defaultValue = "10") int size) throws ExecutionException, InterruptedException {
+        List<Task> tasks = taskService.getAllTasks(status, priority, authorId, assigned, page, size).get();
         return new ResponseEntity<>(tasks, HttpStatus.OK);
     }
 
     // Получение задачи по идентификатору
     @GetMapping("/{taskId}")
-    public ResponseEntity<Task> getTaskById(@PathVariable Long taskId) {
-        Task task = taskService.getTaskById(taskId);
+    public ResponseEntity<Task> getTaskById(@PathVariable Long taskId) throws ExecutionException, InterruptedException {
+        Task task = taskService.getTaskById(taskId).get();
         return new ResponseEntity<>(task, HttpStatus.OK);
     }
 
     // Обновление задачи
     @PutMapping("/{taskId}")
-    public ResponseEntity<Task> updateTask(@PathVariable Long taskId, @RequestBody Task updatedTask, HttpServletRequest request) throws AccessDeniedException, IncorrectTokenException {
-        Task updated = taskService.updateTask(taskId, updatedTask, request);
+    public ResponseEntity<Task> updateTask(@PathVariable Long taskId, @RequestBody Task updatedTask, HttpServletRequest request) throws AccessDeniedException, IncorrectTokenException, ExecutionException, InterruptedException {
+        Task updated = taskService.updateTask(taskId, updatedTask, request).get();
         return new ResponseEntity<>(updated, HttpStatus.OK);
     }
 
     // Обновление статуса задачи (для исполнителя)
     @PutMapping("/changeTaskStatus/{taskId}")
-    public ResponseEntity<Task> changeTaskStatus(@PathVariable Long taskId, @RequestBody TaskStatus updatedTask, HttpServletRequest request) throws AccessDeniedException, IncorrectTokenException {
-        Task updated = taskService.changeTaskStatus(taskId, updatedTask, request);
+    public ResponseEntity<Task> changeTaskStatus(@PathVariable Long taskId, @RequestBody TaskStatus updatedTask, HttpServletRequest request) throws AccessDeniedException, IncorrectTokenException, ExecutionException, InterruptedException {
+        Task updated = taskService.changeTaskStatus(taskId, updatedTask, request).get();
         return new ResponseEntity<>(updated, HttpStatus.OK);
     }
 
@@ -80,8 +81,8 @@ public class TaskController {
                                                      @RequestParam(name = "status", required = false) TaskStatus status,
                                                      @RequestParam(name = "priority", required = false) TaskPriority priority,
                                                      @RequestParam(name = "page", defaultValue = "0") int page,
-                                                     @RequestParam(name = "size", defaultValue = "10") int size) {
-        List<Task> tasks = taskService.getTasksByUser(userId, status, priority, page, size);
+                                                     @RequestParam(name = "size", defaultValue = "10") int size) throws ExecutionException, InterruptedException {
+        List<Task> tasks = taskService.getTasksByUser(userId, status, priority, page, size).get();
         return new ResponseEntity<>(tasks, HttpStatus.OK);
     }
 
@@ -91,8 +92,8 @@ public class TaskController {
                                                              @RequestParam(name = "status", required = false) TaskStatus status,
                                                              @RequestParam(name = "priority", required = false) TaskPriority priority,
                                                              @RequestParam(name = "page", defaultValue = "0") int page,
-                                                             @RequestParam(name = "size", defaultValue = "10") int size) {
-        List<Task> assignedTasks = taskService.getAssignedTasksByUser(userId, status, priority, page, size);
+                                                             @RequestParam(name = "size", defaultValue = "10") int size) throws ExecutionException, InterruptedException {
+        List<Task> assignedTasks = taskService.getAssignedTasksByUser(userId, status, priority, page, size).get();
         return new ResponseEntity<>(assignedTasks, HttpStatus.OK);
     }
 

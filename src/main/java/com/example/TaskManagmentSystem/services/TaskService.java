@@ -15,10 +15,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import java.nio.file.AccessDeniedException;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 @Service
 public class TaskService {
@@ -34,7 +36,8 @@ public class TaskService {
         this.userAuthenticationProvider = userAuthenticationProvider;
     }
 
-    public Task createTask(Task task) {
+    @Async
+    public CompletableFuture<Task> createTask(Task task) {
 
         if (!isValidStatus(task.getStatus())) {
             throw new IllegalArgumentException("Недопустимое значение статуса задачи");
@@ -44,10 +47,11 @@ public class TaskService {
             throw new IllegalArgumentException("Недопустимое значение приоритета задачи");
         }
 
-        return taskRepository.save(task);
+        return CompletableFuture.completedFuture(taskRepository.save(task));
     }
 
-    public Task updateTask(Long taskId, Task updatedTask, HttpServletRequest request) throws IncorrectTokenException, AccessDeniedException {
+    @Async
+    public CompletableFuture<Task> updateTask(Long taskId, Task updatedTask, HttpServletRequest request) throws IncorrectTokenException, AccessDeniedException {
         Task existingTask = taskRepository.findById(taskId)
                 .orElseThrow(() -> new EntityNotFoundException("Задача не найдена с идентификатором: " + taskId));
 
@@ -74,10 +78,11 @@ public class TaskService {
         existingTask.setPriority(updatedTask.getPriority());
         existingTask.setAssignee(updatedTask.getAssignee());
 
-        return taskRepository.save(existingTask);
+        return CompletableFuture.completedFuture(taskRepository.save(existingTask));
     }
 
-    public Task changeTaskStatus(Long taskId, TaskStatus newStatus, HttpServletRequest request) throws AccessDeniedException, IncorrectTokenException {
+    @Async
+    public CompletableFuture<Task> changeTaskStatus(Long taskId, TaskStatus newStatus, HttpServletRequest request) throws AccessDeniedException, IncorrectTokenException {
         Task existingTask = taskRepository.findById(taskId)
                 .orElseThrow(() -> new EntityNotFoundException("Задача не найдена с идентификатором: " + taskId));
 
@@ -95,7 +100,7 @@ public class TaskService {
         }
 
         existingTask.setStatus(newStatus);
-        return taskRepository.save(existingTask);
+        return CompletableFuture.completedFuture(taskRepository.save(existingTask));
     }
 
     private boolean isValidStatus(TaskStatus status) {
@@ -118,6 +123,7 @@ public class TaskService {
         return false;
     }
 
+    @Async
     public void deleteTask(Long taskId, HttpServletRequest request) throws IncorrectTokenException, AccessDeniedException {
         Task existingTask = taskRepository.findById(taskId)
                 .orElseThrow(() -> new EntityNotFoundException("Задача не найдена с идентификатором: " + taskId));
@@ -135,7 +141,8 @@ public class TaskService {
     }
 
     // Получение списка всех задач с фильтрацией и пагинацией
-    public List<Task> getAllTasks(TaskStatus status, TaskPriority priority, Long authorId, Long assigned, int page, int size) {
+    @Async
+    public CompletableFuture<List<Task>> getAllTasks(TaskStatus status, TaskPriority priority, Long authorId, Long assigned, int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
 
         Specification<Task> specification = Specification.where(null);
@@ -164,16 +171,18 @@ public class TaskService {
                     criteriaBuilder.equal(root.get("assignee"), assignedUser));
         }
 
-        return taskRepository.findAll(specification, pageable).getContent();
+        return CompletableFuture.completedFuture(taskRepository.findAll(specification, pageable).getContent());
     }
 
 
-    public Task getTaskById(Long taskId) {
-        return taskRepository.findById(taskId)
-                .orElseThrow(() -> new EntityNotFoundException("Задача не найдена с идентификатором: " + taskId));
+    @Async
+    public CompletableFuture<Task> getTaskById(Long taskId) {
+        return CompletableFuture.completedFuture(taskRepository.findById(taskId)
+                .orElseThrow(() -> new EntityNotFoundException("Задача не найдена с идентификатором: " + taskId)));
     }
 
-    public List<Task> getTasksByUser(Long userId, TaskStatus status, TaskPriority priority, int page, int size) {
+    @Async
+    public CompletableFuture<List<Task>> getTasksByUser(Long userId, TaskStatus status, TaskPriority priority, int page, int size) {
 
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new EntityNotFoundException("Пользователь не найден с идентификатором: " + userId));
@@ -193,10 +202,10 @@ public class TaskService {
                     criteriaBuilder.equal(root.get("priority"), priority));
         }
 
-        return taskRepository.findAll(specification, pageable).getContent();
+        return CompletableFuture.completedFuture(taskRepository.findAll(specification, pageable).getContent());
     }
 
-    public List<Task> getAssignedTasksByUser(Long userId, TaskStatus status, TaskPriority priority, int page, int size) {
+    public CompletableFuture<List<Task>> getAssignedTasksByUser(Long userId, TaskStatus status, TaskPriority priority, int page, int size) {
         User assignee = userRepository.findById(userId)
                 .orElseThrow(() -> new EntityNotFoundException("Пользователь не найден с идентификатором: " + userId));
 
@@ -215,7 +224,7 @@ public class TaskService {
                     criteriaBuilder.equal(root.get("priority"), priority));
         }
 
-        return taskRepository.findAll(specification, pageable).getContent();
+        return CompletableFuture.completedFuture(taskRepository.findAll(specification, pageable).getContent());
     }
 
 

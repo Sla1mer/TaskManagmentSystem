@@ -17,6 +17,7 @@ import org.springframework.test.context.ActiveProfiles;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.ExecutionException;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -40,7 +41,7 @@ public class CommentServiceTests {
     private UserRepository userRepository;
 
     @Test
-    void testCreateComment() {
+    void testCreateComment() throws ExecutionException, InterruptedException {
         Comment comment = new Comment();
         comment.setText("Test comment");
         comment.setAuthor(new User(1L));
@@ -49,7 +50,7 @@ public class CommentServiceTests {
 
         when(commentRepository.save(any(Comment.class))).thenReturn(comment);
 
-        Comment createdComment = commentService.createComment(comment);
+        Comment createdComment = commentService.createComment(comment).get();
 
         verify(commentRepository, Mockito.times(1)).save(comment);
 
@@ -60,7 +61,7 @@ public class CommentServiceTests {
     }
 
     @Test
-    void testGetCommentsByTask() {
+    void testGetCommentsByTask() throws ExecutionException, InterruptedException {
         Long taskId = 1L;
         Task task = new Task();
         task.setId(taskId);
@@ -71,7 +72,7 @@ public class CommentServiceTests {
         when(taskRepository.findById(taskId)).thenReturn(Optional.of(task));
         when(commentRepository.findByTask(task)).thenReturn(List.of(comment1, comment2));
 
-        List<Comment> comments = commentService.getCommentsByTask(taskId);
+        List<Comment> comments = commentService.getCommentsByTask(taskId).get();
 
         verify(taskRepository).findById(taskId);
         verify(commentRepository).findByTask(task);

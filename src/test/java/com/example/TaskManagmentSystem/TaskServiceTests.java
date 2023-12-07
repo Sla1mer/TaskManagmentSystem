@@ -22,6 +22,7 @@ import org.springframework.test.context.ActiveProfiles;
 
 import java.nio.file.AccessDeniedException;
 import java.util.Optional;
+import java.util.concurrent.ExecutionException;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
@@ -46,7 +47,7 @@ public class TaskServiceTests {
     private TaskService taskService;
 
     @Test
-    void testCreateTask() {
+    void testCreateTask() throws ExecutionException, InterruptedException {
         Task task = new Task();
         task.setTitle("Test Task");
         task.setDescription("This is a test task");
@@ -55,7 +56,7 @@ public class TaskServiceTests {
 
         when(taskRepository.save(task)).thenReturn(task);
 
-        Task createdTask = taskService.createTask(task);
+        Task createdTask = taskService.createTask(task).get();
 
         verify(taskRepository, Mockito.times(1)).save(task);
 
@@ -88,7 +89,7 @@ public class TaskServiceTests {
 
     // От лица автора
     @Test
-    void testUpdateTask() throws IncorrectTokenException, AccessDeniedException {
+    void testUpdateTask() throws IncorrectTokenException, AccessDeniedException, ExecutionException, InterruptedException {
         Long taskId = 1L;
         Task existingTask = new Task();
         existingTask.setId(taskId);
@@ -114,7 +115,7 @@ public class TaskServiceTests {
         updatedTask.setPriority(TaskPriority.НИЗКИЙ);
         existingTask.setAssignee(new User(3));
 
-        Task result = taskService.updateTask(taskId, updatedTask, mock(HttpServletRequest.class));
+        Task result = taskService.updateTask(taskId, updatedTask, mock(HttpServletRequest.class)).get();
 
         verify(taskRepository, times(1)).save(existingTask);
 
@@ -223,7 +224,7 @@ public class TaskServiceTests {
 
 
     @Test
-    void testGetTaskById() {
+    void testGetTaskById() throws ExecutionException, InterruptedException {
         Long taskId = 1L;
         Task task = new Task("Test Task",
                 "This is a test task",
@@ -236,7 +237,7 @@ public class TaskServiceTests {
 
         when(taskRepository.findById(taskId)).thenReturn(Optional.of(task));
 
-        Task result = taskService.getTaskById(taskId);
+        Task result = taskService.getTaskById(taskId).get();
 
         verify(taskRepository, Mockito.times(1)).findById(taskId);
 

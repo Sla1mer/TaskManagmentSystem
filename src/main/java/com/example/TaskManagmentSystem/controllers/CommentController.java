@@ -9,6 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.concurrent.ExecutionException;
 
 @RestController
 @Tag(name = "CommentController", description = "Комментарии")
@@ -22,14 +23,14 @@ public class CommentController {
     }
 
     @PostMapping("/create")
-    public ResponseEntity<Comment> createComment(@RequestBody Comment comment) {
-        Comment createdComment = commentService.createComment(comment);
+    public ResponseEntity<Comment> createComment(@RequestBody Comment comment) throws ExecutionException, InterruptedException {
+        Comment createdComment = commentService.createComment(comment).get();
         return new ResponseEntity<>(createdComment, HttpStatus.CREATED);
     }
 
     @GetMapping("/task/{taskId}")
-    public ResponseEntity<List<Comment>> getCommentsByTask(@PathVariable Long taskId) {
-        List<Comment> comments = commentService.getCommentsByTask(taskId);
+    public ResponseEntity<List<Comment>> getCommentsByTask(@PathVariable Long taskId) throws ExecutionException, InterruptedException {
+        List<Comment> comments = commentService.getCommentsByTask(taskId).get();
         return new ResponseEntity<>(comments, HttpStatus.OK);
     }
 }
