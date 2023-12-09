@@ -12,12 +12,12 @@
 1. Клонируйте репозиторий:
 
 ```bash
-git clone https://github.com/yourusername/task-management-system.git
+git clone https://github.com/Sla1mer/TaskManagmentSystem
 ```
 
 2. Перейдите в каталог проекта:
 ```bash
-cd task-management-system
+cd TaskManagmentSystem
 ```
 
 3. Запустите приложение с помощью Docker Compose:
